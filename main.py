@@ -1,5 +1,9 @@
+import run_aes
+import run_des
+
+
 message = str(input("Enter your Message : "))
-key = str(input("Enter the Key:"))
+key = 'awdajuhsfksyshuw'
 
 """
 amino_acids = [[['GCU','GCC','GCA','GCG'],['A']],[['CGA','CGG','AGA','AGG'],['R']],[['AAU','AAC'],['N']],
@@ -125,3 +129,10 @@ print(mbin_to_m(mbin))
 mdna=mdna.replace('U','T')
 print(mdna_to_mbin(mdna))
 print(maa_to_mdna(maa,amb))
+q = int("".join(str(i) for i in m_to_mbin(key)),2)%2
+print(q)
+q=0
+if q==1:
+    run_aes.run_aes(message,key)
+elif q==0:
+    run_des.run_des(message,key)
