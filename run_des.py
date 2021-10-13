@@ -229,14 +229,23 @@ class des():
     def decrypt(self, key, text, padding=False):
         return self.run(key, text, DECRYPT, padding)
     
-def run_des(text, key):
+def enc_des(text, key):
     d = des()
     w = len(text)%8
     text = text + (" " * (8-w))
     t1= time.time()
     r = d.encrypt(key,text)
     t2= time.time()
-    r2 = d.decrypt(key,r)
     print("Ciphered: %r" % r)
     print(t2-t1)
+    return repr(r)
+
+
+def dec_des(text, key):
+    d = des()
+    t1= time.time()
+    r2 = d.decrypt(key,text)
+    t2= time.time()
     print("Deciphered: ", r2)
+    print(t2-t1)
+    return r2

@@ -155,7 +155,7 @@ def aesDecrypt(cipher_text,key):
         decrypted_text+=unicode2Text(A0)
     return decrypted_text
 
-def run_aes(text, key):
+def enc_aes(text, key):
     # driver code :
     plain_text = text
     cipher_key = key    
@@ -165,6 +165,16 @@ def run_aes(text, key):
     t2=time.time()
     print("The encrpyted text is : {}".format(cipher_text))
     print(t2-t1)
+    return cipher_text
+  
+def dec_aes(text, key):
+    # driver code :
+    cipher_text = text
+    cipher_key = key    
     print("Decrypting : ")
+    t1=time.time() 
     decrypted_text = aesDecrypt(cipher_text,cipher_key)
+    t2=time.time()
     print("The decrpyted text is : {}".format(decrypted_text))
+    print(t2-t1)
+    return decrypted_text
