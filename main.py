@@ -1,15 +1,14 @@
-from numpy import angle
 import run_aes
 import run_des
 import time
 from PIL import Image
 import cv2
+import unicodedata
 
-img = cv2.imread('Database/2.jpg')
-img = cv2.resize(img,(500,500))
-message = str(input("Enter your Message : "))
+
+#message = str(input("Enter your Message : "))
 t1=time.time()
-key = '1234567890123456'
+#key = '1234567890123456'
 
 dna = {'00':'A','01':'C','10':'G','11':'T'}
 idna = {'A':'00','C':'01','G':'10','T':'11'}
@@ -44,7 +43,7 @@ def m_to_mbin(message):
     mbin = ''
     for i in message:
         m_ascii = ord(i)
-        m_ascii_bin = bin(m_ascii)[0] + bin(m_ascii)[2:]
+        m_ascii_bin = '{:08b}'.format(m_ascii)
         mbin += str(m_ascii_bin)
     return mbin
 
@@ -55,8 +54,7 @@ def mbin_to_m(message):
         m+=chr(int(t,2))
     return m
 
-mbin = m_to_mbin(message)
-print("mbin:", mbin)
+
 
 def mbin_to_mdna(mbin):
     mdna=''
@@ -74,11 +72,7 @@ def mdna_to_mbin(mdna):
         mbin+=idna[i]
     return mbin
 
-mdna = mbin_to_mdna(mbin)
-mdna = mdna.replace('T','U')
-ex=len(mdna)%3
-if ex!=0:
-    mdna+='A'*(3-ex)
+
 
 def mdna_to_maa(mdna):
     amb=''
@@ -115,110 +109,141 @@ def maa_to_mdna(maa,amb):
         n+=1     
     return mdna
 
-print("mdna:",mdna)
-x = mdna_to_maa(mdna)
-maa = x[0]
-amb = x[1]
-print("maa:",maa)
-print("amb:",amb)   
-m1dna = mbin_to_mdna(m_to_mbin(maa)) 
-print("m1dna:",m1dna)
-
-q = int("".join(str(i) for i in m_to_mbin(key)),2)%2
-print(q)
-if q==1:
-    cipherM = run_aes.enc_aes(m1dna,key)
-elif q==0:
-    cipherM = run_des.enc_des(m1dna,key)
-print("cipherm before bin: ", cipherM)
-cipherBin = m_to_mbin(cipherM)
-print(cipherBin)
-embData = cipherBin+amb
-
-lamb = bin(len(amb))[0] + bin(len(amb))[2:]
-print("lamb:",lamb)
-lcb = bin(len(embData))[0] + bin(len(embData))[2:]
-e = (500*500)//(3*len(embData))
-print("lcb:",lcb)
-lcbs = (48-len(lcb))*'0' + lcb
-lambs = (48-len(lamb))*'0' + lamb
-
-embData2 = lambs + lcbs
-print("embdata1:",embData)
-print("embdata2:",embData2)
-i=0
-for j in range(0,500):
-    for k in range(0,500,e):
+def encrpt_crypteg(message,key,image,out_img):
+    imgfn = image.split('/')[-1]
+    img_name, img_ext = imgfn.split('.') 
+    img = cv2.imread(image)
+    h, w, _ = img.shape 
+    recData2=""
+    
+    mbin = m_to_mbin(message)
+    print("mbin:", mbin)
+    mdna = mbin_to_mdna(mbin)
+    mdna = mdna.replace('T','U')
+    ex=len(mdna)%3
+    if ex!=0:
+        mdna+='A'*(3-ex)
+    print("mdna:",mdna)
+    x = mdna_to_maa(mdna)
+    maa = x[0]
+    amb = x[1]
+    print("maa:",maa)
+    print("amb:",amb)   
+    m1dna = mbin_to_mdna(m_to_mbin(maa)) 
+    print("m1dna:",m1dna)
+    q = int("".join(str(i) for i in m_to_mbin(key)),2)%2
+    q=1
+    print(q)
+    
+    if q==1:
+        cipherM = run_aes.enc_aes(m1dna,key)
+    elif q==0:
+        cipherM = run_des.enc_des(m1dna,key)
+    ##cipherM = unicodedata.normalize('NFKD', cipherM).encode('ascii', 'ignore').decode()
+    print("cipherm before bin: ", cipherM)
+    cipherBin = m_to_mbin(cipherM)
+    print(cipherBin)
+    embData = cipherBin+amb
+    lamb = bin(len(amb))[0] + bin(len(amb))[2:]
+    print("lamb:",lamb)
+    lcb = bin(len(embData))[0] + bin(len(embData))[2:]
+    e = (h*w)//(3*len(embData))
+    print("lcb:",lcb)
+    lcbs = (48-len(lcb))*'0' + lcb
+    lambs = (48-len(lamb))*'0' + lamb
+    embData2 = lambs + lcbs
+    print("embdata1:",embData)
+    print("embdata2:",embData2)
+    for j in range(w-33,w-1):
+        for o in range(3):
+            recData2 = recData2 + bin(img[h-1,j,o])[-1]
+    print("before",recData2)
+    i=0
+    for j in range(0,h):
+        for k in range(0,w,e):
+            for l in range(3):
+                if i<len(embData):
+                    img[j,k,l] = int("".join(str(x) for x in bin(img[j,k,l])[0] + bin(img[j,k,l])[2:-1] + embData[i]),2)
+                    i+=1
+                else:
+                    break
+    o=0
+    for j in range(w-33,w-1):
         for l in range(3):
-            if i<len(embData):
-                img[j,k,l] = int("".join(str(x) for x in bin(img[j,k,l])[0] + bin(img[j,k,l])[2:-1] + embData[i]),2)
-                i+=1
+            if o<len(embData2):
+                img[h-1,j,l] = int("".join(str(x) for x in bin(img[h-1,j,l])[0] + bin(img[h-1,j,l])[2:-1] + embData2[o]),2)
+                o+=1
             else:
                 break
-        
 
-o=0
-for j in range(467,500):
-    for l in range(3):
-        if o<len(embData2):
-            img[499,j,l] = int("".join(str(x) for x in bin(img[499,j,l])[0] + bin(img[499,j,l])[2:-1] + embData2[o]),2)
-            o+=1
-        else:
-            break
+    recData1=""
+    for j in range(w-33,w-1):
+        for o in range(3):
+            recData1 = recData1 + bin(img[h-1,j,o])[-1]
+    print("after-before",recData1)
+    cv2.imwrite('{}/{}_encrpted.png'.format(out_img,img_name),img,)
     
-
 t3= time.time()
-cv2.imshow("hello",img)
-cv2.waitKey(0) # waits until a key is pressed
-cv2.destroyAllWindows() 
-recData=""
-recData2=""
+##cv2.imshow("hello",img)
+##cv2.waitKey(0) # waits until a key is pressed
+##cv2.destroyAllWindows()
 
-for j in range(467,499):
-    for o in range(3):
-        recData2 = recData2 + bin(img[499,j,o])[-1]
+def decrpt_crypteg(key,image):
+    img2 = cv2.imread(image)
+    h, w, = img2.shape[:2] 
+    print(h,w)
+    recData=""
+    recData2=""
+    for j in range(w-33,w-1):
+        for o in range(3):
+            recData2 = recData2 + bin(img2[h-1,j,o])[-1]
 
-print("recData2:", recData2)
-LAMB = int("".join(str(i) for i in recData2[0:48]),2)
-LCB = int("".join(str(i) for i in recData2[48:]),2)
+    print("recData2:", recData2)
+    LAMB = int("".join(str(i) for i in recData2[0:48]),2)
+    LCB = int("".join(str(i) for i in recData2[48:]),2)
 
-print("Len of amb:",LAMB)
-print("Len of recdata:",LCB)
+    print("Len of amb:",LAMB)
+    print("Len of recdata:",LCB)
+    e = (h*w)//(3*LCB)
+    i=0
+    for j in range(0,h):
+        for k in range(0,w,e):
+            for l in range(3):
+                if i<LCB:
+                    recData = recData + bin(img2[j,k,l])[-1]
+                    i+=1
 
-i=0
-for j in range(0,500):
-    for k in range(0,500,e):
-        for l in range(3):
-            if i<LCB:
-                recData = recData + bin(img[j,k,l])[-1]
-                i+=1
+    print("recData:", recData)
+    LCBO = LCB-LAMB
+    print("Len of Cipher text only:",LCBO)
+    CIPHERm = recData[:LCBO]
+    AMB = recData[LCBO:]
 
-print("recData:", recData)
-LCBO = LCB-LAMB
-print("Len of Cipher text only:",LCBO)
-CIPHERm = recData[:LCBO]
-AMB = recData[LCBO:]
+    print("Cipher text:",CIPHERm)
+    print("Amb:",AMB)
 
-print("Cipher text:",CIPHERm)
-print("Amb:",AMB)
+    CIPHERm = mbin_to_m(CIPHERm)
+    print(CIPHERm)
+    q = int("".join(str(i) for i in m_to_mbin(key)),2)%2
+    q=1
+    print(q)
+    
+    if q==1:
+        M1 = run_aes.dec_aes(CIPHERm,key)
+    elif q==0:
+        M1 = run_des.dec_des(CIPHERm,key)
 
-CIPHERm = mbin_to_m(CIPHERm)
-print(CIPHERm)
-if q==1:
-    M1 = run_aes.dec_aes(CIPHERm,key)
-elif q==0:
-    M1 = run_des.dec_des(CIPHERm,key)
-
-M1dna = M1
-print("M1dna:", M1dna)
-M1aa = mbin_to_m(mdna_to_mbin(M1dna))
-print("M1aa:", M1aa)
-Mdna = maa_to_mdna(M1aa,amb)
-Mdna=Mdna.replace('U','T')
-Mbin = mdna_to_mbin(Mdna)
-M = mbin_to_m(Mbin)
-print("Mdna:",Mdna)
-print("Mbin:",Mbin)
-print("M:",M)
+    M1dna = M1
+    print("M1dna:", M1dna)
+    M1aa = mbin_to_m(mdna_to_mbin(M1dna))
+    print("M1aa:", M1aa)
+    Mdna = maa_to_mdna(M1aa,AMB)
+    Mdna=Mdna.replace('U','T')
+    Mbin = mdna_to_mbin(Mdna)
+    M = mbin_to_m(Mbin)
+    print("Mdna:",Mdna)
+    print("Mbin:",Mbin)
+    print("M:",M)
+    return M
 t2=time.time()
 print("Total time:", t3-t1)

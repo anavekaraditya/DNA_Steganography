@@ -244,6 +244,8 @@ def enc_des(text, key):
 def dec_des(text, key):
     d = des()
     t1= time.time()
+    w = len(text)%8
+    text = text + (" " * (8-w))
     r2 = d.decrypt(key,text)
     t2= time.time()
     print("Deciphered: ", r2)
