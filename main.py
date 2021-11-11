@@ -1,13 +1,11 @@
 import run_aes
 import run_des
 import time
-from PIL import Image
 import cv2
-import unicodedata
 
 
 #message = str(input("Enter your Message : "))
-t1=time.time()
+##t1=time.time()
 #key = '1234567890123456'
 
 dna = {'00':'A','01':'C','10':'G','11':'T'}
@@ -54,8 +52,6 @@ def mbin_to_m(message):
         m+=chr(int(t,2))
     return m
 
-
-
 def mbin_to_mdna(mbin):
     mdna=''
     w = len(mbin)%4
@@ -71,8 +67,6 @@ def mdna_to_mbin(mdna):
     for i in mdna:
         mbin+=idna[i]
     return mbin
-
-
 
 def mdna_to_maa(mdna):
     amb=''
@@ -183,67 +177,70 @@ def encrpt_crypteg(message,key,image,out_img):
     print("after-before",recData1)
     cv2.imwrite('{}/{}_encrpted.png'.format(out_img,img_name),img,)
     
-t3= time.time()
+##t3= time.time()
 ##cv2.imshow("hello",img)
 ##cv2.waitKey(0) # waits until a key is pressed
 ##cv2.destroyAllWindows()
 
 def decrpt_crypteg(key,image):
-    img2 = cv2.imread(image)
-    h, w, = img2.shape[:2] 
-    print(h,w)
-    recData=""
-    recData2=""
-    for j in range(w-33,w-1):
-        for o in range(3):
-            recData2 = recData2 + bin(img2[h-1,j,o])[-1]
+    try:
+        img2 = cv2.imread(image)
+        h, w, = img2.shape[:2] 
+        print(h,w)
+        recData=""
+        recData2=""
+        for j in range(w-33,w-1):
+            for o in range(3):
+                recData2 = recData2 + bin(img2[h-1,j,o])[-1]
 
-    print("recData2:", recData2)
-    LAMB = int("".join(str(i) for i in recData2[0:48]),2)
-    LCB = int("".join(str(i) for i in recData2[48:]),2)
+        print("recData2:", recData2)
+        LAMB = int("".join(str(i) for i in recData2[0:48]),2)
+        LCB = int("".join(str(i) for i in recData2[48:]),2)
 
-    print("Len of amb:",LAMB)
-    print("Len of recdata:",LCB)
-    e = (h*w)//(3*LCB)
-    i=0
-    for j in range(0,h):
-        for k in range(0,w,e):
-            for l in range(3):
-                if i<LCB:
-                    recData = recData + bin(img2[j,k,l])[-1]
-                    i+=1
+        print("Len of amb:",LAMB)
+        print("Len of recdata:",LCB)
+        e = (h*w)//(3*LCB)
+        i=0
+        for j in range(0,h):
+            for k in range(0,w,e):
+                for l in range(3):
+                    if i<LCB:
+                        recData = recData + bin(img2[j,k,l])[-1]
+                        i+=1
 
-    print("recData:", recData)
-    LCBO = LCB-LAMB
-    print("Len of Cipher text only:",LCBO)
-    CIPHERm = recData[:LCBO]
-    AMB = recData[LCBO:]
+        print("recData:", recData)
+        LCBO = LCB-LAMB
+        print("Len of Cipher text only:",LCBO)
+        CIPHERm = recData[:LCBO]
+        AMB = recData[LCBO:]
 
-    print("Cipher text:",CIPHERm)
-    print("Amb:",AMB)
+        print("Cipher text:",CIPHERm)
+        print("Amb:",AMB)
 
-    CIPHERm = mbin_to_m(CIPHERm)
-    print(CIPHERm)
-    q = int("".join(str(i) for i in m_to_mbin(key)),2)%2
-    q=1
-    print(q)
-    
-    if q==1:
-        M1 = run_aes.dec_aes(CIPHERm,key)
-    elif q==0:
-        M1 = run_des.dec_des(CIPHERm,key)
+        CIPHERm = mbin_to_m(CIPHERm)
+        print(CIPHERm)
+        q = int("".join(str(i) for i in m_to_mbin(key)),2)%2
+        q=1
+        print(q)
+        
+        if q==1:
+            M1 = run_aes.dec_aes(CIPHERm,key)
+        elif q==0:
+            M1 = run_des.dec_des(CIPHERm,key)
 
-    M1dna = M1
-    print("M1dna:", M1dna)
-    M1aa = mbin_to_m(mdna_to_mbin(M1dna))
-    print("M1aa:", M1aa)
-    Mdna = maa_to_mdna(M1aa,AMB)
-    Mdna=Mdna.replace('U','T')
-    Mbin = mdna_to_mbin(Mdna)
-    M = mbin_to_m(Mbin)
-    print("Mdna:",Mdna)
-    print("Mbin:",Mbin)
-    print("M:",M)
+        M1dna = M1
+        print("M1dna:", M1dna)
+        M1aa = mbin_to_m(mdna_to_mbin(M1dna))
+        print("M1aa:", M1aa)
+        Mdna = maa_to_mdna(M1aa,AMB)
+        Mdna=Mdna.replace('U','T')
+        Mbin = mdna_to_mbin(Mdna)
+        M = mbin_to_m(Mbin)
+        print("Mdna:",Mdna)
+        print("Mbin:",Mbin)
+        print("M:",M)
+    except:
+        M = "wrong key"
     return M
-t2=time.time()
-print("Total time:", t3-t1)
+##t2=time.time()
+##print("Total time:", t3-t1)
