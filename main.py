@@ -116,7 +116,8 @@ def encrpt_crypteg(message, key, image, out_img):
     img_name, img_ext = imgfn.split('.')
     img = cv2.imread(image)
     h, w, _ = img.shape
-    recData2 = ""
+
+    # recData2 = ""
 
     mbin = m_to_mbin(message)
     print("mbin:", mbin)
@@ -139,7 +140,6 @@ def encrpt_crypteg(message, key, image, out_img):
     if kl < 16:
         key = key + ' ' * (16 - kl)
 
-
     if q == 0:
         cipherM = run_aes.enc_aes(m1dna, key)
     elif q == 1:
@@ -157,25 +157,36 @@ def encrpt_crypteg(message, key, image, out_img):
     lamb = bin(len(amb))[0] + bin(len(amb))[2:]
     print("lamb:", lamb)
     lcb = bin(len(embData))[0] + bin(len(embData))[2:]
-    e = (h * w) // (3 * len(embData))
+    if len(embData) <= ((h * w - 32) * 3):
+        e = (h * w - 32) // (3 * len(embData))
+        s = 1
+    else:
+        e = 1
+        s = len(embData) / ((h * w - 32) * 3)
+        if float(s).is_integer():
+            s = s // 1
+        else:
+            s += 1
+
     print("lcb:", lcb)
     lcbs = (48 - len(lcb)) * '0' + lcb
     lambs = (48 - len(lamb)) * '0' + lamb
     embData2 = lambs + lcbs
     print("embdata1:", embData)
     print("embdata2:", embData2)
-    for j in range(w - 33, w - 1):
-        for o in range(3):
-            recData2 = recData2 + bin(img[h - 1, j, o])[-1]
-    print("before", recData2)
+    # for j in range(w - 33, w - 1):
+    #    for o in range(3):
+    #        recData2 = recData2 + bin(img[h - 1, j, o])[-1]
+    # print("before", recData2)
     i = 0
     for j in range(0, h):
-        for k in range(0, w, e):
+        for k in range(0, w - 33, e):
             for l in range(3):
                 if i < len(embData):
                     img[j, k, l] = int(
-                        "".join(str(x) for x in bin(img[j, k, l])[0] + bin(img[j, k, l])[2:-1] + embData[i]), 2)
-                    i += 1
+                        "".join(
+                            str(x) for x in bin(img[j, k, l])[0] + bin(img[j, k, l])[2:(-1 * s)] + embData[i:i + s]), 2)
+                    i += s
                 else:
                     break
     o = 0
@@ -201,7 +212,7 @@ def encrpt_crypteg(message, key, image, out_img):
 ##cv2.waitKey(0) # waits until a key is pressed
 ##cv2.destroyAllWindows()
 
-def decrpt_crypteg(key, image):
+def decrpt_crypteg(key, image, output):
     try:
         img2 = cv2.imread(image)
         h, w, = img2.shape[:2]
@@ -218,13 +229,24 @@ def decrpt_crypteg(key, image):
 
         print("Len of amb:", LAMB)
         print("Len of recdata:", LCB)
-        e = (h * w) // (3 * LCB)
+
+        if LCB <= ((h * w - 32) * 3):
+            e = (h * w - 32) // (3 * LCB)
+            s = 1
+        else:
+            e = 1
+            s = LCB / ((h * w - 32) * 3)
+            if float(s).is_integer():
+                s = s // 1
+            else:
+                s += 1
+
         i = 0
         for j in range(0, h):
-            for k in range(0, w, e):
+            for k in range(0, w - 33, e):
                 for l in range(3):
                     if i < LCB:
-                        recData = recData + bin(img2[j, k, l])[-1]
+                        recData = recData + bin(img2[j, k, l])[(-1 * s):]
                         i += 1
 
         print("recData:", recData)
@@ -263,6 +285,11 @@ def decrpt_crypteg(key, image):
         print("Mdna:", Mdna)
         print("Mbin:", Mbin)
         print("M:", M)
+        if output != "":
+            output = output + '/decryptedMsg.txt'
+            f = open(output, 'w')
+            f.write(M)
+            return output
     except:
         M = "wrong key"
     return M
