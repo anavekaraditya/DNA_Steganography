@@ -13,12 +13,12 @@ class myDES():
 		self.iv = iv[:8]
 
 	def enc(self,plaintext):
-		des3 = DES3.new(self.key,DES3.MODE_CBC,self.iv)
+		des3 = DES3.new(self.key,DES3.MODE_CFB,self.iv)
 		encmsg = des3.encrypt(plaintext.encode())
 		return encmsg
 	
 	def dec(self,ciphertext):
-		des3 = DES3.new(self.key,DES3.MODE_CBC,self.iv)
+		des3 = DES3.new(self.key,DES3.MODE_CFB,self.iv)
 		decmsg = des3.decrypt(ciphertext)
 		return decmsg
 	
@@ -34,6 +34,24 @@ def main():
 	print('CIPHERED:\t%s'%ciphered)
 	print('DECIPHERED:\t%s'%deciphered)
 	print(deciphered.decode('utf-8'))
+
+def enc_des3(text,key):
+	ivtext = 'Crypteg'
+	myCipher = myDES(key, ivtext)
+	ciphered = myCipher.enc(text).hex()
+	print(ciphered)
+	return ciphered
+
+def dec_des3(text,key):
+	ivtext = 'Crypteg'
+	myCipher = myDES(key, ivtext)
+	text = bytes.fromhex(text)
+	deciphered = myCipher.dec(text).decode('utf-8')
+	print(deciphered)
+	return deciphered
+
+#e = enc_des3('Adityddfgfgdfa','DESCPYTE')
+#dec_des3(e,'DESCPYTE')
+
+
 		
-if __name__ == '__main__':
-	main()

@@ -1,4 +1,3 @@
-
 import base64
 
 
@@ -377,4 +376,19 @@ def test_decription_keys(keys):
     return True
 
 
-idea_cypher()
+def enc_idea(text, key):
+    keys = key_schedule(key)
+    crypted = encrypt(text, keys)
+    print(crypted)
+    return crypted
+
+
+def dec_idea(text, key):
+    keys = key_schedule(key)
+    decription_keys = decription_keys_scheduling(keys)
+    decripted = decrypt(text, decription_keys)
+    print(decripted)
+    return decripted
+
+
+#idea_cypher()

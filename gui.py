@@ -3,7 +3,7 @@ from tkinter import filedialog
 import tkinter
 from tkinter.font import Font
 
-from numpy import WRAP, pad
+#from numpy import WRAP, pad
 import main
 
 class Home:
