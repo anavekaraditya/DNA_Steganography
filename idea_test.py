@@ -105,15 +105,15 @@ def binary_plaintext_to_64bit_array(plain_text):
 def key_schedule(key):
     b64_key = str_to_b64(key)
     b64_key = key_validation(b64_key)
-    print(key, len(key))
+    #print(key, len(key))
     binary_key = buffer_to_binary(to_ascii_code(b64_key))
-    print(binary_key, len(binary_key))
+    #print(binary_key, len(binary_key))
     keys = []
     ins = 1
     while len(keys) < 52:
-        print("Round", ins)
+        #print("Round", ins)
         for index in range(15, len(binary_key), 16):
-            print(binary_key[index - 15:index + 1])
+            #print(binary_key[index - 15:index + 1])
             keys.append(binary_key[index - 15:index + 1])
         binary_key = binary_key[25:len(binary_key)] + binary_key[0:25]
         ins = ins + 1
@@ -159,33 +159,33 @@ def function_addition(entry, key):
 def cypher_round(entries, keys_round, round_number):
     keys_round = keys_round[round_number * 6:(round_number * 6) + 6]
     step_1 = function_multiply(entries[0], keys_round[0])
-    print("step_1", entries[0], keys_round[0], step_1)
+    #print("step_1", entries[0], keys_round[0], step_1)
     step_2 = function_addition(entries[1], keys_round[1])
-    print("step_2", entries[1], keys_round[1], step_2)
+    #print("step_2", entries[1], keys_round[1], step_2)
     step_3 = function_addition(entries[2], keys_round[2])
-    print("step_3", entries[2], keys_round[2], step_3)
+    #print("step_3", entries[2], keys_round[2], step_3)
     step_4 = function_multiply(entries[3], keys_round[3])
-    print("step_4", entries[3], keys_round[3], step_4)
+    #print("step_4", entries[3], keys_round[3], step_4)
     step_5 = function_XOR(step_1, step_3)
-    print("step_5", step_1, step_3, step_5)
+    #print("step_5", step_1, step_3, step_5)
     step_6 = function_XOR(step_2, step_4)
-    print("step_6", step_2, step_4, step_6)
+    #print("step_6", step_2, step_4, step_6)
     step_7 = function_multiply(step_5, keys_round[4])
-    print("step_7", step_5, keys_round[4], step_7)
+    #print("step_7", step_5, keys_round[4], step_7)
     step_8 = function_addition(step_6, step_7)
-    print("step_8", step_6, step_7, step_8)
+    #print("step_8", step_6, step_7, step_8)
     step_9 = function_multiply(step_8, keys_round[5])
-    print("step_9", step_8, keys_round[5], step_9)
+    #print("step_9", step_8, keys_round[5], step_9)
     step_10 = function_addition(step_7, step_9)
-    print("step_10", step_7, step_9, step_10)
+    #print("step_10", step_7, step_9, step_10)
     step_11 = function_XOR(step_1, step_9)
-    print("step_11", step_1, step_9, step_11)
+    #print("step_11", step_1, step_9, step_11)
     step_12 = function_XOR(step_3, step_9)
-    print("step_12", step_3, step_9, step_12)
+    #print("step_12", step_3, step_9, step_12)
     step_13 = function_XOR(step_2, step_10)
-    print("step_13", step_2, step_10, step_13)
+    #print("step_13", step_2, step_10, step_13)
     step_14 = function_XOR(step_4, step_10)
-    print("step_14", step_4, step_10, step_14)
+    #print("step_14", step_4, step_10, step_14)
     return [step_11, step_13, step_12, step_14]
 
 
@@ -200,10 +200,10 @@ def cypher_half_round(entries, keys):
 
 def cypher_process(block, keys):
     entries = [block[0:16], block[16:32], block[32:48], block[48:64]]
-    print(entries)
+    #print(entries)
     for x in range(0, 8):
         entries = cypher_round(entries, keys, x)
-        print("round ", (x + 1), entries)
+        #print("round ", (x + 1), entries)
     output = cypher_half_round(entries, keys)
     return output
 
@@ -211,7 +211,7 @@ def cypher_process(block, keys):
 def cypher_bit_block(block_array, keys):
     cypher_array = []
     for block in block_array:
-        print("block  ", block)
+        #print("block  ", block)
         cypher_array.append(cypher_process(block, keys))
     return cypher_array
 
@@ -234,7 +234,7 @@ def euclides_algorithm(A, B):
     division = A // B
     module = A % B
     if module != 0:
-        print(A, " = ", B, " * ", division, " + ", module)
+        #print(A, " = ", B, " * ", division, " + ", module)
         return euclides_algorithm(B, module)
     else:
         return B
@@ -278,12 +278,12 @@ def decription_keys_scheduling(encription_keys):
     decription_keys.append(get_binary_16(multiply_inverse(get_str_from_binary(prepared_encription_keys[0]))))
     decription_keys.append(get_binary_16(additive_inverse(get_str_from_binary(prepared_encription_keys[1]))))
     decription_keys.append(get_binary_16(additive_inverse(get_str_from_binary(prepared_encription_keys[2]))))
-    print((get_str_from_binary(prepared_encription_keys[3])))
+    #print((get_str_from_binary(prepared_encription_keys[3])))
     decription_keys.append(get_binary_16(multiply_inverse(get_str_from_binary(prepared_encription_keys[3]))))
     decription_keys.append(prepared_encription_keys[8])
     decription_keys.append(prepared_encription_keys[9])
     prepared_encription_keys = prepared_encription_keys[4:len(prepared_encription_keys)]
-    print(len(prepared_encription_keys))
+    #print(len(prepared_encription_keys))
     for key_index in range(0, 7):
         key_1 = get_binary_16(multiply_inverse(get_str_from_binary(prepared_encription_keys[key_index * 6])))
         key_2 = get_binary_16(additive_inverse(get_str_from_binary(prepared_encription_keys[(key_index * 6) + 1])))
@@ -320,9 +320,9 @@ def decrypt(text, keys):
     text = b64_to_str(text)
     ascii_buffer = to_ascii_code(text)
     binary_buffer = buffer_to_binary(ascii_buffer)
-    print("binary  ", binary_buffer)
+    #print("binary  ", binary_buffer)
     bit64_array = binary_plaintext_to_64bit_array(binary_buffer)
-    print("bit array ", bit64_array)
+    #print("bit array ", bit64_array)
     decrypted_array = cypher_bit_block(bit64_array, keys)
     decrypted_binary_text = ""
     for decrypted_block in decrypted_array:
@@ -379,7 +379,7 @@ def test_decription_keys(keys):
 def enc_idea(text, key):
     keys = key_schedule(key)
     crypted = encrypt(text, keys)
-    print(crypted)
+    # print(crypted)
     return crypted
 
 
@@ -387,7 +387,7 @@ def dec_idea(text, key):
     keys = key_schedule(key)
     decription_keys = decription_keys_scheduling(keys)
     decripted = decrypt(text, decription_keys)
-    print(decripted)
+    # print(decripted)
     return decripted
 
 

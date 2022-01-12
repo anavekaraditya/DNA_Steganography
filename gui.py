@@ -93,7 +93,7 @@ class Home:
             key = key_entry.get()
             in_img = filepath.name
             out_img = outpath
-            print(msg)
+            #print(msg)
             print(key)
             print(filepath.name)
             print(outpath)

@@ -46,8 +46,8 @@ def normxcorr2(template, image, mode="valid"):
 
 
 def main():
-    original = cv2.imread("E:/5th Sem/E1-DWS/project/Database/2.jpg")
-    compressed = cv2.imread("E:/5th Sem/E1-DWS/project/encrpted/2_encrpted.png", 1)
+    original = cv2.imread("E:/5th Sem/E1-DWS/project/Database/image_in.png")
+    compressed = cv2.imread("E:/5th Sem/E1-DWS/project/Performance/Image 3/image_in_encrpted.png", 1)
     psnr = PSNR(original, compressed)
     MSE = np.mean((original - compressed) ** 2)
     RMSE = sqrt(MSE)
@@ -56,14 +56,14 @@ def main():
     IF = 1-NCC
     AD = np.mean(original-compressed)
     SSIM = ssim(original, compressed,multichannel=True)
-    print(f"PSNR value is {psnr} dB")
-    print(f"MSE value is {MSE} dB")
-    print(f"RMSE value is {RMSE} dB")
-    print(f"SNR value is {SNR} dB")
-    print(f"NCC value is {NCC} ")
-    print(f"IF value is {IF} ")
-    print(f"AD value is {AD} ")
-    print(f"SSIM value is {SSIM} ")
+    print(f"1.PSNR value is {psnr} dB")
+    print(f"2.MSE value is {MSE} dB")
+    print(f"3.RMSE value is {RMSE} dB")
+    print(f"4.SNR value is {SNR} dB")
+    print(f"5.NCC value is {NCC} ")
+    print(f"6.IF value is {IF} ")
+    print(f"7.AD value is {AD} ")
+    print(f"8.SSIM value is {SSIM} ")
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ def enc_des3(text,key):
 	ivtext = 'Crypteg'
 	myCipher = myDES(key, ivtext)
 	ciphered = myCipher.enc(text).hex()
-	print(ciphered)
+	# print(ciphered)
 	return ciphered
 
 def dec_des3(text,key):
@@ -47,7 +47,7 @@ def dec_des3(text,key):
 	myCipher = myDES(key, ivtext)
 	text = bytes.fromhex(text)
 	deciphered = myCipher.dec(text).decode('utf-8')
-	print(deciphered)
+	# print(deciphered)
 	return deciphered
 
 #e = enc_des3('Adityddfgfgdfa','DESCPYTE')

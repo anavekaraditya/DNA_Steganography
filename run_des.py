@@ -1,5 +1,5 @@
 import pyDes
-import main
+
 
 # i = input("Enter any string: ")
 
@@ -33,10 +33,10 @@ def enc_des(text, key):
     key = key[:8]
     k_ecb = pyDes.des(key, pyDes.ECB)
     e_ecb = k_ecb.encrypt(text)
-    print(e_ecb)
+    # print(e_ecb)
     #encrypted = e_ecb.decode('utf-16')
     encrypted = e_ecb.hex()
-    print(encrypted)
+    # print(encrypted)
     return encrypted
 
 
@@ -47,7 +47,7 @@ def dec_des(text, key):
     e_ecb = bytes.fromhex(text)
     d_ecb = k_ecb.decrypt(e_ecb)
     decrypted = d_ecb.decode('utf-8')
-    print(decrypted)
+    # print(decrypted)
     return decrypted
 
 
