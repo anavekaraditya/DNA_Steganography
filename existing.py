@@ -5,10 +5,10 @@ import idea_test
 import time
 import cv2
 
-t1=0
-t2=0
-t3=0
-t4=0
+t1 = 0
+t2 = 0
+t3 = 0
+t4 = 0
 
 
 dna = {'00': 'A', '01': 'C', '10': 'G', '11': 'T'}
@@ -114,7 +114,7 @@ def maa_to_mdna(maa, amb):
 
 
 def encrpt_crypteg(message, key, image, out_img):
-    t1=time.time()
+    t1 = time.time()
     imgfn = image.split('/')[-1]
     img_name, img_ext = imgfn.split('.')
     img = cv2.imread(image)
@@ -135,20 +135,8 @@ def encrpt_crypteg(message, key, image, out_img):
     print("amb:", amb)
     m1dna = mbin_to_mdna(m_to_mbin(maa))
     print("m1dna:", m1dna)
-    q = int("".join(str(i) for i in m_to_mbin(key)), 2) % 4
-    print("algo index: ", q)
-    kl = len(key)
-    if kl < 16:
-        key = key + ' ' * (16 - kl)
 
-    if q == 0:
-        cipherM = run_aes.enc_aes(m1dna, key)
-    elif q == 1:
-        cipherM = run_des.enc_des(m1dna, key)
-    elif q == 2:
-        cipherM = idea_test.enc_idea(m1dna, key)
-    elif q == 3:
-        cipherM = run_des3.enc_des3(m1dna, key)
+    cipherM = run_aes.enc_aes(m1dna, key)
 
     # cipherM = unicodedata.normalize('NFKD', cipherM).encode('ascii', 'ignore').decode()
     print("cipherm before bin: ", cipherM)

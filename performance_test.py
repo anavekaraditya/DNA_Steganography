@@ -46,8 +46,8 @@ def normxcorr2(template, image, mode="valid"):
 
 
 def main():
-    original = cv2.imread("E:/5th Sem/E1-DWS/project/Database/image_in.png")
-    compressed = cv2.imread("E:/5th Sem/E1-DWS/project/Performance/Image 3/image_in_encrpted.png", 1)
+    original = cv2.imread("E:/5th Sem/E1-DWS/project/img/3.jpg")
+    compressed = cv2.imread("E:/5th Sem/E1-DWS/project/img/test4/3_encrpted.png", 1)
     psnr = PSNR(original, compressed)
     MSE = np.mean((original - compressed) ** 2)
     RMSE = sqrt(MSE)

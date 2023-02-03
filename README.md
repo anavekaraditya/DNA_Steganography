@@ -1,6 +1,9 @@
 # DNA_Steganography
  DWS Project
 
+# To start the program 
+run the gui.py
+
 # Abstract
 Although cryptography and steganography can be used to provide data security, each has its 
 own problem. The problem with Cryptography is that, the cipher text looks ridiculous, so the 
